@@ -6,10 +6,15 @@
   </head>
   <body>
 <% var i=0; %>
+<a href="/admin/post/0/edit">add new post</a>
+
+
 <% for(i; i<length; i++) { %>
   <h2><a href="posts<%= posts[i].url%>"> <%= posts[i].Title %> </a></h2>
   <p><%= posts[i].Summary %></p>
 <% }; %>
+
+
 
   </body>
 </html>
