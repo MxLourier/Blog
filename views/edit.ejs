@@ -18,6 +18,11 @@
     <label for="url">post url</label>
     <input type="text" name="url" value="<%=post.url%>">
     <br>
+    <%for(let i=0;i<length; i++){ %>
+      <label for="paragraph[<%=i%>]">Paragraph <%=i+1%></label>
+    <textarea name="paragraph[<%=i%>]" rows="8" cols="80"><%= paragraph[i].Content%></textarea>
+    <input type="hidden" name="paragraphID[<%=i%>]" value="<%=paragraph[i].ID%>">
+    <%}%>
     <button type="submit" name="button">Submit</button>
   </form>
 
