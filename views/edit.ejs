@@ -4,13 +4,15 @@
 <head>
   <meta charset="utf-8">
   <title></title>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+</script>
 </head>
 
 <body>
 
   <form class="" action="" method="post">
     <label for="title">Post title:</label>
-    <input type="text" name="title" value="<%=post.Title %>" >
+    <input type="text" name="title" value="<%=post.Title %>">
     <br>
     <label for="summary">Post summary:</label>
     <input type="text" name="summary" value="<%=post.Summary%>">
@@ -18,15 +20,29 @@
     <label for="url">post url</label>
     <input type="text" name="url" value="<%=post.url%>">
     <br>
-    <%for(let i=0;i<length; i++){ %>
-      <label for="paragraph[<%=i%>]">Paragraph <%=i+1%></label>
-    <textarea name="paragraph[<%=i%>]" rows="8" cols="80"><%= paragraph[i].Content%></textarea>
-    <input type="hidden" name="paragraphID[<%=i%>]" value="<%=paragraph[i].ID%>">
-    <%}%>
+
+    <div class="paragraphContainer">
+      <%for(let i=0;i<length; i++){ %>
+      <%- include("editParagraph", {i: i, paragraph: paragraph[i]}) -%>
+      <%} %>
+    </div>
+
+
+
+    <button type="button" name="button" class="addParagraphBtn">Add paragraph</button>
     <button type="submit" name="button">Submit</button>
   </form>
 
-
+<script type="text/javascript">
+  var length = <%=length%>;
+  document.querySelector('.addParagraphBtn').addEventListener('click', function() {
+    jQuery.post("/admin/addParagraph", {delta:length}, function(data) {
+      console.log(data);
+      jQuery(".paragraphContainer").append(data);
+      length++;
+    });
+  });
+</script>
 
 </body>
 

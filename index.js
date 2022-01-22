@@ -3,6 +3,7 @@ var express = require("express");
 const bodyParser = require("body-parser");
 var ejs = require("ejs");
 
+
 var posts = [];
 var length;
 var length2;
@@ -150,6 +151,10 @@ app.post("/admin/post/:id/edit", function(req, res) {
     })
   }
 })
+
+ app.post("/admin/addParagraph", function(req,res){
+   res.render("editParagraph", {i: req.body.delta, paragraph: {ID: 0, Content: ""}})
+ })
 
 
 
