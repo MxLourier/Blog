@@ -12,7 +12,7 @@ const app = express();
 
 app.set('view engine', 'ejs'); //???
 
-app.use(express.urlencoded({
+app.use(express.urlencoded({ // turns "body" into object
   extended: true
 }))
 
@@ -153,9 +153,14 @@ app.post("/admin/post/:id/edit", function(req, res) {
 })
 
  app.post("/admin/addParagraph", function(req,res){
-   res.render("editParagraph", {i: req.body.delta, paragraph: {ID: 0, Content: ""}})
+   res.render("editParagraph", {i: req.body.delta, paragraph: {ID: 0, Content: ""}}) //?
  })
 
+
+app.post("/admin/deleteParagraph", function(req,res){
+  con.query("DELETE FROM `paragraphs` WHERE `paragraphs`.`ID` = " +req.body.paragraphID);
+
+})
 
 
 app.listen(3000, function() {

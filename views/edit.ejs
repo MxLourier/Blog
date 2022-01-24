@@ -22,9 +22,11 @@
     <br>
 
     <div class="paragraphContainer">
-      <%for(let i=0;i<length; i++){ %>
+      <% for(let i=0;i<length; i++){ %>
       <%- include("editParagraph", {i: i, paragraph: paragraph[i]}) -%>
+
       <%} %>
+
     </div>
 
 
@@ -37,11 +39,27 @@
   var length = <%=length%>;
   document.querySelector('.addParagraphBtn').addEventListener('click', function() {
     jQuery.post("/admin/addParagraph", {delta:length}, function(data) {
-      console.log(data);
+      console.log(data); //
       jQuery(".paragraphContainer").append(data);
       length++;
     });
   });
+</script>
+
+<script type="text/javascript">
+  let deleteButtons = document.querySelectorAll('.deleteParagraphBtn');
+  const deleteFunction = function() {
+   let paragraphID = this.getAttribute("data-paragraph-id");
+   let index = this.getAttribute("data-paragraph-index");
+   if (paragraphID){ jQuery.post("/admin/deleteParagraph", {paragraphID: paragraphID}, function(data) {
+     console.log(data)
+   })};
+   jQuery(".parEditContainer[data-paragraph-index=" + index +"]").remove();
+  };
+  for(let j=0; j<deleteButtons.length; j++) {
+    //deleteButtons[j].addEventListener('click', deleteFunction);
+  }
+
 </script>
 
 </body>
