@@ -135,18 +135,32 @@ app.post("/admin/post/:id/edit", function(req, res) {
   if (req.params.id == 0) {
     con.query("INSERT INTO `pages` (`url`, `Title`, `Summary`) VALUES ('" + req.body.url + "', '" + req.body.title + "', '" + req.body.summary + "');", function(err, result) {
       if (err) throw err;
+      for (let i = 0; i < (req.body.paragraph.length); i++) {
+        con.query("UPDATE `paragraphs` SET `Content` = '" + req.body.paragraph[i] + "' WHERE `PageID` = " + req.params.id + " and `ID` = " + req.body.paragraphID[i] + ";");
+      }
       //con.query("INSERT INTO `paragraphs` ()")
       res.redirect("/");
-
     })
 
   } else {
     con.query("UPDATE `pages` SET `url` = '" + req.body.url + "', `Title` = '" + req.body.title + "', `Summary` = '" + req.body.summary + "' WHERE `pages`.`ID` =" + req.params.id + ";", function(err) {
       if (err) throw err;
       console.log(req.body.paragraph);
-      for (let i = 0; i < (req.body.paragraph.length); i++) {
-        con.query("UPDATE `paragraphs` SET `Content` = '" + req.body.paragraph[i] + "' WHERE `PageID` = " + req.params.id + " and `ID` = " + req.body.paragraphID[i] + ";");
+      if (!req.body.paragraph) {
+        res.redirect("/");
+        return;
       }
+      req.body.paragraph.forEach( function(element, index){
+      var sql;
+      console.log(parseInt(req.body.paragraphID[index]));
+        if(parseInt(req.body.paragraphID[index])){
+          sql = "UPDATE `paragraphs` SET `Content` = '" + req.body.paragraph[index] + "' WHERE `PageID` = " + req.params.id + " and `ID` = " + req.body.paragraphID[index] + ";"
+      }else{
+        sql = "INSERT INTO `paragraphs` (`PageID`, `Content`) values('" + req.params.id + "', '" + req.body.paragraph[index] + "');"
+      }
+      console.log(sql);
+      con.query(sql);
+      })
       res.redirect("/");
     })
   }

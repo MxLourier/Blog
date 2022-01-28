@@ -5,12 +5,13 @@
   <meta charset="utf-8">
   <title></title>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
-</script>
+  </script>
 </head>
 
 <body>
 
   <form class="" action="" method="post">
+    <!-- action = current url by default ("/admin/post/:id/edit") -->
     <label for="title">Post title:</label>
     <input type="text" name="title" value="<%=post.Title %>">
     <br>
@@ -23,6 +24,7 @@
 
     <div class="paragraphContainer">
       <% for(let i=0;i<length; i++){ %>
+        <!-- adjust to work for e.g. par[0], par[2], par[3]? -->
       <%- include("editParagraph", {i: i, paragraph: paragraph[i]}) -%>
 
       <%} %>
@@ -35,18 +37,23 @@
     <button type="submit" name="button">Submit</button>
   </form>
 
-<script type="text/javascript">
-  var length = <%=length%>;
-  document.querySelector('.addParagraphBtn').addEventListener('click', function() {
-    jQuery.post("/admin/addParagraph", {delta:length}, function(data) {
-      console.log(data); //
-      jQuery(".paragraphContainer").append(data);
-      length++;
+  <script type="text/javascript">
+    var length = <%= length %> ;
+    document.querySelector('.addParagraphBtn').addEventListener('click', function() {
+      jQuery.post("/admin/addParagraph", {
+        delta: length
+      }, function(data) {
+        console.log(data); //
+        jQuery(".paragraphContainer").append(data);
+        length++;
+      });
     });
-  });
-</script>
+  </script>
 
-<script type="text/javascript">
+
+  <!-- ******** Incorrect way ******* -->
+
+  <!-- <script type="text/javascript">
   let deleteButtons = document.querySelectorAll('.deleteParagraphBtn');
   const deleteFunction = function() {
    let paragraphID = this.getAttribute("data-paragraph-id");
@@ -54,13 +61,30 @@
    if (paragraphID){ jQuery.post("/admin/deleteParagraph", {paragraphID: paragraphID}, function(data) {
      console.log(data)
    })};
-   jQuery(".parEditContainer[data-paragraph-index=" + index +"]").remove();
+   jQuery(".parEditContainer[data-paragraph-index=" + index +"]").remove(); //what is parEditContainer[i]?
   };
   for(let j=0; j<deleteButtons.length; j++) {
-    //deleteButtons[j].addEventListener('click', deleteFunction);
+    deleteButtons[j].addEventListener('click', deleteFunction);
   }
+</script> -->
 
-</script>
+  <!-- new way -->
+
+  <script type="text/javascript">
+    $(".paragraphContainer").on("click", ".deleteParagraphBtn", function() {
+      console.log("click");
+      let paragraphID = this.getAttribute("data-paragraph-id");
+      let index = this.getAttribute("data-paragraph-index");
+      if (paragraphID) {
+        jQuery.post("/admin/deleteParagraph", {
+          paragraphID: paragraphID
+        }, function(data) {
+          console.log(data);
+        });
+      };
+      jQuery(".parEditContainer[data-paragraph-index=" + index + "]").remove(); //what is parEditContainer[i]? [] are used for attributes other than class
+    });
+  </script>
 
 </body>
 

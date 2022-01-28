@@ -4,8 +4,9 @@
   <textarea name="paragraph[<%=i%>]" rows="8" cols="80"><%= paragraph.Content%></textarea>
   <input type="hidden" name="paragraphID[<%=i%>]" value="<%=paragraph.ID%>">
 
-  <button onclick="deleteFunction.call(this)" type="button" name="button" class="deleteParagraphBtn" data-paragraph-id="<%=paragraph.ID%>" data-paragraph-index="<%=i%>"> Delete paragraph</button>
+  <button type="button" name="button" class="deleteParagraphBtn" data-paragraph-id="<%=paragraph.ID%>" data-paragraph-index="<%=i%>"> Delete paragraph</button>
 
   </div>
 
-  <!-- paragraphID to talk to DB, paragraph index to talk to html. New empty paragraph has no paragraph ID - can be deleted from html without talking to the DB -->
+  <!-- paragraphID to talk to DB, paragraph index to talk to html.
+  New empty paragraph has no paragraph ID - can be deleted from html without talking to the DB -->
