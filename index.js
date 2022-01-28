@@ -3,8 +3,6 @@ var express = require("express");
 const bodyParser = require("body-parser");
 var ejs = require("ejs");
 
-
-var posts = [];
 var length;
 var length2;
 const app = express();
@@ -35,7 +33,7 @@ app.get("/", function(req, res) {
   con.query("SELECT * FROM `pages`", function(err, result, fields) {
     if (err) throw err;
     //console.log(result);
-    posts = result;
+    var posts = result;
     console.log(posts);
     length = posts.length;
     res.render("home", {
@@ -48,34 +46,33 @@ app.get("/", function(req, res) {
 
 app.get("/posts/:topic", function(req, res) {
   var match = false;
-  posts.forEach(function(element) {
-    if (element.url === ("/" + req.params.topic)) {
-      match = true;
-      con.query("SELECT * FROM `paragraphs` WHERE `paragraphs`.`PageID` = " + element.ID, function(err, result, fields) {
-        if (err) throw err;
-        //console.log(result);
-        var paragraphs = result;
-        console.log(paragraphs);
-        length2 = paragraphs.length;
+  con.query("SELECT * FROM `pages` WHERE `url` = '/" + req.params.topic + "'", function(err, result) {
+    if(err) throw err;
+      if (result.length == 0) {
         res.render("post", {
-          postTitle: element.Title,
-          postBody: element.Summary,
-          content: paragraphs,
-          length: length2,
-          id: element.ID
+          postTitle: "Not found",
+          postBody: "No post found for " + req.params.topic,
+          id: 0
         })
-      })
-
-    }
+        return;
+      }
+      con.query("SELECT * FROM `paragraphs` WHERE `paragraphs`.`PageID` = " + result[0].ID, function(err, result2, fields) {
+          if (err) throw err;
+          var paragraphs = result2;
+          console.log(paragraphs);
+          length2 = paragraphs.length;
+          res.render("post", {
+              postTitle: result[0].Title,
+              postBody: result[0].Summary,
+              content: paragraphs,
+              length: length2,
+              id: result[0].ID
+            }
+          )
+      });
   });
-  if (!match) {
-    res.render("post", {
-      postTitle: "Not found",
-      postBody: "No post found for " + req.params.topic,
-      id: 0
-    })
-  }
-})
+});
+
 
 app.get("/admin/post/:id/delete", function(req, res) {
   var match = false;
@@ -150,29 +147,35 @@ app.post("/admin/post/:id/edit", function(req, res) {
         res.redirect("/");
         return;
       }
-      req.body.paragraph.forEach( function(element, index){
-      var sql;
-      console.log(parseInt(req.body.paragraphID[index]));
-        if(parseInt(req.body.paragraphID[index])){
+      req.body.paragraph.forEach(function(element, index) {
+        var sql;
+        console.log(parseInt(req.body.paragraphID[index]));
+        if (parseInt(req.body.paragraphID[index])) {
           sql = "UPDATE `paragraphs` SET `Content` = '" + req.body.paragraph[index] + "' WHERE `PageID` = " + req.params.id + " and `ID` = " + req.body.paragraphID[index] + ";"
-      }else{
-        sql = "INSERT INTO `paragraphs` (`PageID`, `Content`) values('" + req.params.id + "', '" + req.body.paragraph[index] + "');"
-      }
-      console.log(sql);
-      con.query(sql);
+        } else {
+          sql = "INSERT INTO `paragraphs` (`PageID`, `Content`) values('" + req.params.id + "', '" + req.body.paragraph[index] + "');"
+        }
+        console.log(sql);
+        con.query(sql);
       })
       res.redirect("/");
     })
   }
 })
 
- app.post("/admin/addParagraph", function(req,res){
-   res.render("editParagraph", {i: req.body.delta, paragraph: {ID: 0, Content: ""}}) //?
- })
+app.post("/admin/addParagraph", function(req, res) {
+  res.render("editParagraph", {
+    i: req.body.delta,
+    paragraph: {
+      ID: 0,
+      Content: ""
+    }
+  }) //?
+})
 
 
-app.post("/admin/deleteParagraph", function(req,res){
-  con.query("DELETE FROM `paragraphs` WHERE `paragraphs`.`ID` = " +req.body.paragraphID);
+app.post("/admin/deleteParagraph", function(req, res) {
+  con.query("DELETE FROM `paragraphs` WHERE `paragraphs`.`ID` = " + req.body.paragraphID);
 
 })
 
